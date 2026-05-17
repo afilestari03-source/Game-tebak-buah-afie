@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Tebak Buah Afiee</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;800&family=Quicksand:wght@400;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        display: ['Baloo 2', 'cursive'],
+                        body: ['Quicksand', 'sans-serif']
+                    },
+                    colors: {
+                        cream: '#FFF8F0',
+                        peach: '#FFBE98',
+                        coral: '#FF8B6A',
+                        mint: '#98D8AA',
+                        sage: '#7EACB5',
+                        dusty: '#B5A8D5'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        :root {
+            --primary: #FF8B6A;
+            --secondary: #FFBE98;
+            --success: #98D8AA;
+            --danger: #E76F51;
+            --accent: #7EACB5;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            font-family: 'Quicksand', sans-serif;
+            overflow-x: hidden;
+        }
+
+        /* Animated background */
+        .bg-aesthetic {
+            background: 
+                linear-gradient(135deg, rgba(255,248,240,0.85) 0%, rgba(255,190,152,0.75) 50%, rgba(181,168,213,0.8) 100%),
+                url('https://images.unsplash.com/photo-1610832958506-aa56368176cf?w=1920&q=80');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+
+        /* Floating elements */
+        .float-fruit {
+            position: fixed;
+            font-size: 3rem;
+            opacity: 0.15;
+            animation: floatAround 20s ease-in-out infinite;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        @keyframes floatAround {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            25% { transform: translate(30px, -40px) rotate(90deg); }
+            50% { transform: translate(-20px, -80px) rotate(180deg); }
+            75% { transform: translate(40px, -40px) rotate(270deg); }
+        }
+
+        /* Glass card */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 2px solid rgba(255, 255, 255, 0.6);
+            box-shadow: 
+                0 25px 50px -12px rgba(0, 0, 0, 0.15),
+                0 0 0 1px rgba(255, 255, 255, 0.5) inset;
+        }
+
+        /* Button animations */
+        .btn-fruit {
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-fruit::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn-fruit:hover::before {
+            left: 100%;
+        }
+
+        .btn-fruit:hover {
+            transform: translateY(-4px) scale(1.02);
+        }
+
+        .btn-fruit:active {
+            transform: translateY(2px) scale(0.98);
+        }
+
+        /* Fruit display animation */
+        .fruit-bounce {
+            animation: fruitBounce 0.6s ease-out;
+        }
+
+        @keyframes fruitBounce {
+            0% { transform: scale(0) rotate(-180deg); opacity: 0; }
+            50% { transform: scale(1.2) rotate(10deg); }
+            70% { transform: scale(0.9) rotate(-5deg); }
+            100% { transform: scale(1) rotate(0deg); opacity: 1; }
+        }
+
+        /* Star celebration */
+        .star-celebration {
+            position: absolute;
+            animation: starBurst 1s ease-out forwards;
+            pointer-events: none;
+        }
+
+        @keyframes starBurst {
+            0% { transform: translate(-50%, -50%) scale(0); opacity: 1; }
+            100% { transform: translate(-50%, -150%) scale(1.5); opacity: 0; }
+        }
+
+        /* Confetti */
+        .confetti {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            animation: confettiFall 3s ease-out forwards;
+            pointer-events: none;
+            z-index: 100;
+        }
+
+        @keyframes confettiFall {
+            0% { transform: translateY(-100vh) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+        }
+
+        /* Progress bar animation */
+        .progress-fill {
+            transition: width 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        /* Pulse animation */
+        .pulse-ring {
+            animation: pulseRing 2s ease-out infinite;
+        }
+
+        @keyframes pulseRing {
+            0% { transform: scale(1); opacity: 0.8; }
+            100% { transform: scale(1.5); opacity: 0; }
+        }
+
+        /* Screen transitions */
+        .screen-transition {
+            animation: fadeSlideIn 0.5s ease-out;
+        }
+
+        @keyframes fadeSlideIn {
+            0% { opacity: 0; transform: translateY(30px) scale(0.95); }
+            100% { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        /* Timer warning */
+        .timer-warning {
+            animation: timerShake 0.5s ease-in-out infinite;
+        }
+
+        @keyframes timerShake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-2px); }
+            75% { transform: translateX(2px); }
+        }
+
+        /* Correct/Wrong feedback */
+        .correct-answer {
+            animation: correctPop 0.5s ease-out;
+            background: linear-gradient(135deg, #98D8AA, #7BC89C) !important;
+        }
+
+        .wrong-answer {
+            animation: wrongShake 0.5s ease-out;
+            background: linear-gradient(135deg, #E76F51, #D45B3E) !important;
+        }
+
+        @keyframes correctPop {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        @keyframes wrongShake {
+            0%, 100% { transform: translateX(0); }
+            20% { transform: translateX(-8px); }
+            40% { transform: translateX(8px); }
+            60% { transform: translateX(-4px); }
+            80% { transform: translateX(4px); }
+        }
+
+        /* Level badge */
+        .level-badge {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            box-shadow: 0 4px 15px rgba(255, 139, 106, 0.4);
+        }
+
+        /* Stats card */
+        .stats-item {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(10px);
+        }
+
+        /* Hidden class */
+        .hidden { display: none !important; }
+
+        /* Decorative circles */
+        .deco-circle {
+            position: absolute;
+            border-radius: 50%;
+            background: linear-gradient(135deg, rgba(255,190,152,0.3), rgba(181,168,213,0.3));
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body class="bg-aesthetic min-h-screen flex items-center justify-center p-4 relative">
+
+    <!-- Floating Fruits Background -->
+    <div class="float-fruit" style="top: 10%; left: 5%; animation-delay: 0s;">🍎</div>
+    <div class="float-fruit" style="top: 20%; right: 10%; animation-delay: -5s;">🍊</div>
+    <div class="float-fruit" style="top: 60%; left: 8%; animation-delay: -10s;">🍇</div>
+    <div class="float-fruit" style="top: 70%; right: 5%; animation-delay: -15s;">🍓</div>
+    <div class="float-fruit" style="top: 40%; left: 3%; animation-delay: -7s;">🥝</div>
+    <div class="float-fruit" style="top: 85%; right: 15%; animation-delay: -12s;">🍑</div>
+
+    <!-- Main Container -->
+    <div id="game-container" class="glass-card rounded-[40px] w-full max-w-md relative overflow-hidden">
+        
+        <!-- Decorative circles -->
+        <div class="deco-circle w-32 h-32 -top-10 -right-10 opacity-60"></div>
+        <div class="deco-circle w-24 h-24 -bottom-8 -left-8 opacity-40"></div>
+
+        <!-- Start Screen -->
+        <div id="start-screen" class="screen p-8 text-center screen-transition">
+            <div class="mb-6">
+                <div class="text-7xl mb-4 animate-bounce">🍎</div>
+                <h1 class="font-display text-4xl text-coral font-extrabold mb-2">
+                    Tebak Buah
+                </h1>
+                <p class="text-sage font-semibold text-lg">bersama Afiee</p>
+            </div>
+            
+            <div class="bg-white/50 rounded-2xl p-4 mb-6">
+                <p class="text-gray-700 font-medium">
+                    Tebak nama buah dari emoji!<br>
+                    Selesaikan 5 level dan jadi juara!
+                </p>
+            </div>
+
+            <button onclick="startGame()" class="btn-fruit w-full bg-gradient-to-r from-coral to-peach text-white font-display text-xl py-4 px-8 rounded-full shadow-lg">
+                Mulai Bermain
+            </button>
+        </div>
+
+        <!-- Quiz Screen -->
+        <div id="quiz-screen" class="screen hidden p-6 screen-transition">
+            <!-- Level Badge -->
+            <div class="flex justify-center mb-4">
+                <div class="level-badge px-6 py-2 rounded-full text-white font-display font-bold text-lg">
+                    Level <span id="level-display">1</span>
+                </div>
+            </div>
+
+            <!-- Stats Bar -->
+            <div class="flex justify-between gap-3 mb-5">
+                <div class="stats-item flex-1 rounded-xl p-3 text-center">
+                    <div class="text-2xl font-display text-coral" id="timer">20</div>
+                    <div class="text-xs text-gray-500 font-semibold">Detik</div>
+                </div>
+                <div class="stats-item flex-1 rounded-xl p-3 text-center">
+                    <div class="text-2xl font-display text-peach" id="score">0</div>
+                    <div class="text-xs text-gray-500 font-semibold">Skor</div>
+                </div>
+                <div class="stats-item flex-1 rounded-xl p-3 text-center">
+                    <div class="text-2xl font-display text-mint" id="progress">0</div>
+                    <div class="text-xs text-gray-500 font-semibold">dari 5</div>
+                </div>
+            </div>
+
+            <!-- Progress Bar -->
+            <div class="h-2 bg-white/50 rounded-full mb-5 overflow-hidden">
+                <div id="progress-bar" class="progress-fill h-full bg-gradient-to-r from-coral to-peach rounded-full" style="width: 0%"></div>
+            </div>
+
+            <!-- Fruit Display -->
+            <div id="fruit-display" class="relative bg-white/70 rounded-3xl h-40 flex items-center justify-center mb-5 overflow-hidden">
+                <div class="absolute inset-0 bg-gradient-to-br from-peach/10 to-dusty/10"></div>
+                <span id="fruit-emoji" class="text-8xl relative z-10">🍎</span>
+            </div>
+
+            <!-- Options Grid -->
+            <div id="options-container" class="grid grid-cols-2 gap-3 mb-4">
+                <!-- Buttons will be inserted here -->
+            </div>
+
+            <!-- Music Control -->
+            <div class="flex justify-center">
+                <button id="music-control" onclick="toggleMusic()" class="bg-white/70 hover:bg-white transition-colors w-12 h-12 rounded-full flex items-center justify-center text-2xl shadow-md">
+                    🔊
+                </button>
+            </div>
+        </div>
+
+        <!-- Next Level Screen -->
+        <div id="next-level-screen" class="screen hidden p-8 text-center screen-transition">
+            <div class="text-7xl mb-4">🌟</div>
+            <h2 class="font-display text-3xl text-mint font-extrabold mb-2">Hebat!</h2>
+            <p class="text-gray-600 mb-6">Kamu berhasil melewati level ini!</p>
+            
+            <div class="bg-white/50 rounded-2xl p-4 mb-6">
+                <p class="font-display text-xl text-coral">Skor: <span id="next-level-score">0</span></p>
+            </div>
+
+            <button onclick="continueToNextLevel()" class="btn-fruit w-full bg-gradient-to-r from-mint to-sage text-white font-display text-xl py-4 px-8 rounded-full shadow-lg">
+                Level Selanjutnya
+            </button>
+        </div>
+
+        <!-- Win Screen -->
+        <div id="win-screen" class="screen hidden p-8 text-center screen-transition">
+            <div class="text-7xl mb-4">👑</div>
+            <h2 class="font-display text-3xl text-dusty font-extrabold mb-2">Juara!</h2>
+            <p class="text-gray-600 mb-4">Selamat Afiee! Kamu lulus semua level!</p>
+            
+            <div class="bg-gradient-to-r from-peach/30 to-dusty/30 rounded-2xl p-6 mb-6">
+                <p class="text-sm text-gray-500 mb-1">Skor Akhir</p>
+                <p class="font-display text-4xl text-coral" id="final-win-score">0</p>
+            </div>
+
+            <button onclick="location.reload()" class="btn-fruit w-full bg-gradient-to-r from-peach to-coral text-white font-display text-xl py-4 px-8 rounded-full shadow-lg">
+                Main Lagi
+            </button>
+        </div>
+
+        <!-- Game Over Screen -->
+        <div id="game-over-screen" class="screen hidden p-8 text-center screen-transition">
+            <div class="text-7xl mb-4">⏰</div>
+            <h2 class="font-display text-3xl text-danger font-extrabold mb-2">Waktu Habis</h2>
+            <p class="text-gray-600 mb-4">Jangan menyerah! Coba lagi ya!</p>
+            
+            <div class="bg-white/50 rounded-2xl p-4 mb-6">
+                <p class="text-sm text-gray-500 mb-1">Skor Kamu</p>
+                <p class="font-display text-4xl text-coral" id="final-score">0</p>
+            </div>
+
+            <button onclick="location.reload()" class="btn-fruit w-full bg-gradient-to-r from-sage to-dusty text-white font-display text-xl py-4 px-8 rounded-full shadow-lg">
+                Coba Lagi
+            </button>
+        </div>
+    </div>
+
+    <!-- Background Music -->
+    <audio id="bgm" loop>
+        <source src="https://www.chosic.com/wp-content/uploads/2021/04/Happy-Clappy-Ukulele.mp3" type="audio/mpeg">
+    </audio>
+
+    <script>
+        // Initialize variables first
+        const fruits = [
+            { name: "Apel", emoji: "🍎" },
+            { name: "Pisang", emoji: "🍌" },
+            { name: "Semangka", emoji: "🍉" },
+            { name: "Anggur", emoji: "🍇" },
+            { name: "Jeruk", emoji: "🍊" },
+            { name: "Stroberi", emoji: "🍓" },
+            { name: "Nanas", emoji: "🍍" },
+            { name: "Mangga", emoji: "🥭" },
+            { name: "Ceri", emoji: "🍒" },
+            { name: "Lemon", emoji: "🍋" },
+            { name: "Pir", emoji: "🍐" },
+            { name: "Alpukat", emoji: "🥑" },
+            { name: "Peach", emoji: "🍑" },
+            { name: "Kiwi", emoji: "🥝" },
+            { name: "Melon", emoji: "🍈" },
+            { name: "Durian", emoji: "🥭" },
+            { name: "Kelapa", emoji: "🥥" },
+            { name: "Tomat", emoji: "🍅" }
+        ];
+
+        let level = 1;
+        let score = 0;
+        let progress = 0;
+        let timeLeft = 20;
+        let timer = null;
+        let currentCorrect = "";
+        let bgm = null;
+        let audioCtx = null;
+
+        // Wait for DOM to be ready
+        document.addEventListener('DOMContentLoaded', function() {
+            bgm = document.getElementById('bgm');
+            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        });
+
+        // Sound effects
+        function playSound(frequency, type, duration) {
+            if (!audioCtx) return;
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            
+            const oscillator = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
+            
+            oscillator.type = type;
+            oscillator.frequency.setValueAtTime(frequency, audioCtx.currentTime);
+            gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+            
+            oscillator.start();
+            oscillator.stop(audioCtx.currentTime + duration);
+        }
+
+        // Music toggle
+        function toggleMusic() {
+            if (!bgm) return;
+            const btn = document.getElementById('music-control');
+            if (bgm.paused) {
+                bgm.play();
+                btn.textContent = '🔊';
+            } else {
+                bgm.pause();
+                btn.textContent = '🔇';
+            }
+        }
+
+        // Show screen
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
+            const targetScreen = document.getElementById(screenId);
+            if (targetScreen) {
+                targetScreen.classList.remove('hidden');
+            }
+        }
+
+        // Start game
+        function startGame() {
+            if (!bgm) bgm = document.getElementById('bgm');
+            if (bgm) {
+                bgm.volume = 0.3;
+                bgm.play().catch(e => console.log('Audio play failed:', e));
+            }
+            score = 0;
+            level = 1;
+            startLevel();
+        }
+
+        // Start level
+        function startLevel() {
+            progress = 0;
+            timeLeft = 20 + (level * 5); // More time for higher levels
+            updateUI();
+            showScreen('quiz-screen');
+            nextQuestion();
+            startTimer();
+        }
+
+        // Timer
+        function startTimer() {
+            if (timer) clearInterval(timer);
+            
+            timer = setInterval(function() {
+                timeLeft--;
+                const timerEl = document.getElementById('timer');
+                if (timerEl) {
+                    timerEl.textContent = timeLeft;
+                    
+                    // Warning animation when low time
+                    if (timeLeft <= 5) {
+                        timerEl.classList.add('timer-warning', 'text-danger');
+                    } else {
+                        timerEl.classList.remove('timer-warning', 'text-danger');
+                    }
+                }
+                
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    if (bgm) bgm.pause();
+                    const finalScoreEl = document.getElementById('final-score');
+                    if (finalScoreEl) finalScoreEl.textContent = score;
+                    showScreen('game-over-screen');
+                }
+            }, 1000);
+        }
+
+        // Next question
+        function nextQuestion() {
+            const fruit = fruits[Math.floor(Math.random() * fruits.length)];
+            currentCorrect = fruit.name;
+            
+            const fruitEmoji = document.getElementById('fruit-emoji');
+            if (fruitEmoji) {
+                fruitEmoji.textContent = fruit.emoji;
+                fruitEmoji.classList.remove('fruit-bounce');
+                void fruitEmoji.offsetWidth; // Trigger reflow
+                fruitEmoji.classList.add('fruit-bounce');
+            }
+
+            // Generate options
+            let options = [fruit.name];
+            while (options.length < 4) {
+                const randomFruit = fruits[Math.floor(Math.random() * fruits.length)];
+                if (!options.includes(randomFruit.name)) {
+                    options.push(randomFruit.name);
+                }
+            }
+            
+            // Shuffle options
+            options.sort(function() { return Math.random() - 0.5; });
+
+            const container = document.getElementById('options-container');
+            if (container) {
+                container.innerHTML = '';
+                options.forEach(function(option) {
+                    const btn = document.createElement('button');
+                    btn.textContent = option;
+                    btn.className = 'btn-fruit bg-gradient-to-r from-sage to-dusty text-white font-bold py-4 px-4 rounded-2xl text-lg shadow-md';
+                    btn.onclick = function() { checkAnswer(option, btn); };
+                    container.appendChild(btn);
+                });
+            }
+        }
+
+        // Check answer
+        function checkAnswer(choice, btn) {
+            const allBtns = document.querySelectorAll('#options-container button');
+            
+            // Disable all buttons
+            allBtns.forEach(function(b) {
+                b.style.pointerEvents = 'none';
+            });
+
+            if (choice === currentCorrect) {
+                // Correct answer
+                score += 10 * level; // More points for higher levels
+                progress++;
+                btn.classList.add('correct-answer');
+                playSound(523.25, 'sine', 0.2);
+                createStarCelebration();
+                
+                // Update progress bar
+                const progressBar = document.getElementById('progress-bar');
+                if (progressBar) {
+                    progressBar.style.width = (progress / 5 * 100) + '%';
+                }
+            } else {
+                // Wrong answer
+                btn.classList.add('wrong-answer');
+                playSound(200, 'sawtooth', 0.3);
+                
+                // Show correct answer
+                allBtns.forEach(function(b) {
+                    if (b.textContent === currentCorrect) {
+                        b.classList.add('correct-answer');
+                    }
+                });
+            }
+
+            updateUI();
+
+            setTimeout(function() {
+                if (progress >= 5) {
+                    clearInterval(timer);
+                    if (level >= 5) {
+                        // Win!
+                        createConfetti();
+                        const finalWinScore = document.getElementById('final-win-score');
+                        if (finalWinScore) finalWinScore.textContent = score;
+                        showScreen('win-screen');
+                    } else {
+                        // Next level
+                        const nextLevelScore = document.getElementById('next-level-score');
+                        if (nextLevelScore) nextLevelScore.textContent = score;
+                        showScreen('next-level-screen');
+                    }
+                } else {
+                    nextQuestion();
+                }
+            }, 1000);
+        }
+
+        // Continue to next level
+        function continueToNextLevel() {
+            level++;
+            startLevel();
+        }
+
+        // Update UI
+        function updateUI() {
+            const scoreEl = document.getElementById('score');
+            const progressEl = document.getElementById('progress');
+            const levelEl = document.getElementById('level-display');
+            
+            if (scoreEl) scoreEl.textContent = score;
+            if (progressEl) progressEl.textContent = progress;
+            if (levelEl) levelEl.textContent = level;
+        }
+
+        // Star celebration
+        function createStarCelebration() {
+            const display = document.getElementById('fruit-display');
+            if (!display) return;
+            
+            for (let i = 0; i < 5; i++) {
+                setTimeout(function() {
+                    const star = document.createElement('div');
+                    star.className = 'star-celebration text-3xl';
+                    star.textContent = '⭐';
+                    star.style.left = (20 + Math.random() * 60) + '%';
+                    star.style.top = '50%';
+                    display.appendChild(star);
+                    setTimeout(function() { star.remove(); }, 1000);
+                }, i * 100);
+            }
+        }
+
+        // Confetti effect
+        function createConfetti() {
+            const colors = ['#FF8B6A', '#FFBE98', '#98D8AA', '#7EACB5', '#B5A8D5', '#FFD93D'];
+            
+            for (let i = 0; i < 50; i++) {
+                setTimeout(function() {
+                    const confetti = document.createElement('div');
+                    confetti.className = 'confetti';
+                    confetti.style.left = Math.random() * 100 + 'vw';
+                    confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                    confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
+                    confetti.style.animationDuration = (2 + Math.random() * 2) + 's';
+                    document.body.appendChild(confetti);
+                    setTimeout(function() { confetti.remove(); }, 3000);
+                }, i * 50);
+            }
+        }
+    </script>
+</body>
+</html>
